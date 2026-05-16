@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Белая линия — MVP v2</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #fff;
+      --text: #1f2a37;
+      --muted: #607086;
+      --line: #d9e2ee;
+
+      --blue: #1f62b4;
+      --blue-100: #e9f2ff;
+      --green: #198754;
+      --green-100: #e9f7ef;
+      --orange: #cc7a00;
+      --orange-100: #fff5e8;
+      --red: #b23a3a;
+      --red-100: #fdecec;
+      --violet: #6a46c7;
+      --shadow: 0 10px 24px rgba(20, 40, 70, .08);
+      --r: 14px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--blue)
+    }
+
+    .badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1f62b4, #3f89e4);
+      color: #fff;
+      display: grid;
+      place-items: center
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #2d4667
+    }
+
+    .tab.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue)
+    }
+
+    .view {
+      display: none
+    }
+
+    .view.active {
+      display: block
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.35fr .85fr;
+      gap: 14px
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 10px
+    }
+
+    h1 {
+      font-size: 24px
+    }
+
+    h2 {
+      font-size: 20px
+    }
+
+    h3 {
+      font-size: 16px
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted)
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 10px 0 14px
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: #547197
+    }
+
+    .step.active {
+      background: var(--blue-100);
+      border-color: #bfd6fb;
+      color: #204f90;
+      font-weight: 700
+    }
+
+    .step.done {
+      background: var(--green-100);
+      border-color: #bde4ce;
+      color: #14673f
+    }
+
+    .q {
+      margin-bottom: 10px;
+      font-weight: 600
+    }
+
+    .opts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px
+    }
+
+    .opt {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #324a68;
+    }
+
+    .opt.active {
+      border-color: #8db7ef;
+      background: #eef5ff;
+      color: #1d4f8f;
+      font-weight: 600
+    }
+
+    .opt.red.active {
+      border-color: #ef9b9b;
+      background: #fff0f0;
+      color: #8e2c2c
+    }
+
+    .opt.violet.active {
+      border-color: #c7b3f5;
+      background: #f4efff;
+      color: #4f3398
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .inline-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #556a84
+    }
+
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 90px;
+      font: inherit
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff
+    }
+
+    .btn.ghost {
+      background: #f7faff;
+      color: #295186
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed
+    }
+
+    .summary {
+      margin-top: 12px;
+      border: 1px dashed #c5d8f2;
+      background: #f7fbff;
+      border-radius: 12px;
+      padding: 10px;
+      position: sticky;
+      bottom: 8px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 4px 8px
+    }
+
+    .chip.blue {
+      background: var(--blue-100);
+      color: #20579f
+    }
+
+    .chip.red {
+      background: var(--red-100);
+      color: var(--red)
+    }
+
+    .chip.orange {
+      background: var(--orange-100);
+      color: var(--orange)
+    }
+
+    .chip.green {
+      background: var(--green-100);
+      color: var(--green)
+    }
+
+    .chip.violet {
+      background: #f1ebff;
+      color: var(--violet)
+    }
+
+    .mini-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2f4767;
+      margin-bottom: 6px
+    }
+
+    .status-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fbfdff;
+      margin-top: 10px
+    }
+
+    .trackline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 8px
+    }
+
+    .dot {
+      text-align: center;
+      font-size: 12px;
+      color: #6a7f99
+    }
+
+    .dot i {
+      display: block;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      margin: 0 auto 6px;
+      border: 2px solid #c7d6ea;
+      background: #fff;
+    }
+
+    .dot.done i {
+      background: var(--green);
+      border-color: var(--green)
+    }
+
+    .dot.current i {
+      background: var(--blue);
+      border-color: var(--blue)
+    }
+
+    .dot.done,
+    .dot.current {
+      color: #234f87;
+      font-weight: 700
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px
+    }
+
+    .k {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px
+    }
+
+    .k .n {
+      font-size: 26px;
+      font-weight: 800
+    }
+
+    .k .t {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .k.blue {
+      background: #f0f6ff
+    }
+
+    .k.red {
+      background: #fff1f1
+    }
+
+    .k.orange {
+      background: #fff7eb
+    }
+
+    .k.green {
+      background: #edf9f2
+    }
+
+    .dash {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px
+    }
+
+    .canvas-wrap {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff
+    }
+
+    canvas {
+      width: 100%;
+      height: 220px;
+      display: block
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      text-align: left
+    }
+
+    th {
+      background: #f5f9ff
+    }
+
+    tr:last-child td {
+      border-bottom: 0
+    }
+
+    .tag {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-weight: 700
+    }
+
+    .t-red {
+      background: var(--red-100);
+      color: var(--red)
+    }
+
+    .t-blue {
+      background: var(--blue-100);
+      color: #20579f
+    }
+
+    .t-orange {
+      background: var(--orange-100);
+      color: var(--orange)
+    }
+
+    .t-green {
+      background: var(--green-100);
+      color: var(--green)
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .tiny {
+      padding: 6px 8px;
+      font-size: 12px
+    }
+
+    .scroll {
+      overflow: auto
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 12px 0
+    }
+
+    .after-form {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px
+    }
+
+    .info {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 20, 38, .5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px
+    }
+
+    .modal.active {
+      display: flex
+    }
+
+    .modal .box {
+      max-width: 520px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px
+    }
+
+    .mono {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      background: #f4f8ff;
+      border: 1px solid #d7e6ff;
+      border-radius: 10px;
+      padding: 8px
+    }
+
+    @media (max-width:960px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .kpi {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .dash {
+        grid-template-columns: 1fr
+      }
+
+      .after-form {
+        grid-template-columns: 1fr
+      }
+
+      .opts {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="badge">🛡️</div>Белая линия
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-view="applicantView">Подача заявки</button>
+        <button class="tab" data-view="handlerView">Экран обработчика</button>
+      </div>
+    </div>
+
+    <!-- VIEW 1: ЗАЯВИТЕЛЬ -->
+    <section id="applicantView" class="view active">
+      <div class="grid">
+        <div class="card">
+          <h1>Подать заявку</h1>
+          <p>Подай заявку за 2 минуты, которую обязательно рассмотрят.</p>
+
+          <div class="progress">
+            <div class="step active" data-step-ind="0">1. Тип</div>
+            <div class="step" data-step-ind="1">2. Участник</div>
+            <div class="step" data-step-ind="2">3. Время</div>
+            <div class="step" data-step-ind="3">4. Детали</div>
+          </div>
+
+          <!-- STEP 1 -->
+          <div class="w-step" data-step="0">
+            <div class="q">Что ближе к вашей ситуации?</div>
+            <div class="opts" id="trackOpts">
+              <button class="opt red" data-v="anti">Антикоррупция (деньги, подарок, откат)</button>
+              <button class="opt violet" data-v="ethic">Этика и среда (давление, травля, дискриминация)</button>
+            </div>
+          </div>
+
+          <!-- STEP 2 -->
+          <div class="w-step" data-step="1" style="display:none">
+            <div class="q">Кто участвует в ситуации?</div>
+            <div class="opts" id="personOpts">
+              <button class="opt" data-v="Преподаватель">Преподаватель</button>
+              <button class="opt" data-v="Сотрудник деканата">Сотрудник деканата</button>
+              <button class="opt" data-v="Научный руководитель">Научный руководитель</button>
+              <button class="opt" data-v="Студент-посредник">Студент-посредник</button>
+              <button class="opt" data-v="Внешний подрядчик">Внешний подрядчик</button>
+              <button class="opt" data-v="Не знаю">Не знаю</button>
+            </div>
+          </div>
+
+          <!-- STEP 3 -->
+          <div class="w-step" data-step="2" style="display:none">
+            <div class="q">Когда это происходит?</div>
+            <div class="opts" id="urgencyOpts">
+              <button class="opt" data-v="now">Прямо сейчас</button>
+              <button class="opt" data-v="week">На этой неделе</button>
+              <button class="opt" data-v="repeat">Повторяется регулярно</button>
+              <button class="opt" data-v="past">Было раньше</button>
+            </div>
+          </div>
+
+          <!-- STEP 4 -->
+          <div class="w-step" data-step="3" style="display:none">
+            <div class="q">Уточните детали</div>
+            <div class="row" style="margin-bottom:8px">
+              <label class="inline-check"><input type="checkbox" id="moneyDemand"> Требовали деньги</label>
+              <label class="inline-check"><input type="checkbox" id="hasEvidence"> Есть подтверждения</label>
+              <label class="inline-check"><input type="checkbox" id="pressure7"> Есть риск давления в ближайшее
+                время</label>
+            </div>
+            <div class="row" style="margin-bottom:8px">
+              <label class="inline-check"><input type="radio" name="mode" value="signal" checked> Сигнал (без
+                ФИО)</label>
+              <label class="inline-check"><input type="radio" name="mode" value="official"> Официальное
+                обращение</label>
+            </div>
+            <textarea id="details" placeholder="Кратко: что произошло, где и когда"></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn ghost" id="prevBtn">Назад</button>
+            <div class="row">
+              <button class="btn" id="nextBtn">Далее</button>
+              <button class="btn primary" id="sendBtn" style="display:none">Отправить</button>
+            </div>
+          </div>
+
+          <!-- Краткая сводка снизу decision tree -->
+          <div class="summary">
+            <div class="mini-title">Краткая сводка заявки</div>
+            <div class="chips">
+              <span class="chip blue" id="sTrack">Тип: —</span>
+              <span class="chip violet" id="sPerson">Участник: —</span>
+              <span class="chip orange" id="sUrgency">Когда: —</span>
+              <span class="chip green" id="sMode">Формат: сигнал</span>
+              <span class="chip red" id="sPrio">Приоритет: —</span>
+            </div>
+            <div class="muted">Важно: вы получите UUID + PIN для отслеживания статуса.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Статус заявки</h2>
+          <p>Проверка по UUID и PIN</p>
+
+          <div class="status-card">
+            <input id="inUuid" placeholder="UUID"
+              style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--line);border-radius:10px">
+            <input id="inPin" placeholder="PIN"
+              style="width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--line);border-radius:10px">
+            <button class="btn primary" id="checkBtn" style="width:100%">Проверить статус</button>
+          </div>
+
+          <div id="statusOutput" class="status-card" style="display:none">
+            <div class="chips">
+              <span class="chip blue" id="oTrack"></span>
+              <span class="chip orange" id="oPrio"></span>
+              <span class="chip green" id="oSla"></span>
+            </div>
+            <div class="muted" id="oMeta"></div>
+
+            <div class="trackline">
+              <div class="dot" data-dot="0"><i></i>Принято</div>
+              <div class="dot" data-dot="1"><i></i>Проверка</div>
+              <div class="dot" data-dot="2"><i></i>Решение</div>
+              <div class="dot" data-dot="3"><i></i>Закрыто</div>
+            </div>
+          </div>
+
+          <div id="statusEmpty" class="status-card muted">Пока нет данных для отображения.</div>
+        </div>
+      </div>
+
+      <!-- Информация после формы (ниже при скролле) -->
+      <div class="after-form">
+        <div class="info">
+          <h3>1) Безопасная подача жалобы</h3>
+          <p>Можно отправить сигнал без раскрытия личности.</p>
+        </div>
+        <div class="info">
+          <h3>2) Быстрое решение проблем</h3>
+          <p>Подача жалобы занимает 2 минуты</p>
+        </div>
+        <div class="info">
+          <h3>3) Статус всегда виден </h3>
+          <p>UUID/PIN, приоритет, срок первичной реакции и этап рассмотрения.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: ОБРАБОТЧИК -->
+    <section id="handlerView" class="view">
+      <div class="card">
+        <h1>Экран обработчика</h1>
+        <p>Сводка по заявкам и рабочая очередь.</p>
+
+        <div class="kpi" style="margin-top:10px">
+          <div class="k blue">
+            <div class="n" id="kTotal">0</div>
+            <div class="t">Всего заявок</div>
+          </div>
+          <div class="k red">
+            <div class="n" id="kHigh">0</div>
+            <div class="t">Высокий приоритет</div>
+          </div>
+          <div class="k orange">
+            <div class="n" id="kInWork">0</div>
+            <div class="t">В работе</div>
+          </div>
+          <div class="k green">
+            <div class="n" id="kClosed">0</div>
+            <div class="t">Закрыто</div>
+          </div>
+        </div>
+
+        <div class="dash">
+          <div class="canvas-wrap">
+            <h3>Распределение по типам</h3>
+            <canvas id="barChart" width="520" height="220"></canvas>
+          </div>
+          <div class="canvas-wrap">
+            <h3>Этапы обработки</h3>
+            <canvas id="pieChart" width="520" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="scroll">
+          <table id="queueTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Тип</th>
+                <th>Приоритет</th>
+                <th>Этап</th>
+                <th>Обновлено</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- modal -->
+  <div class="modal" id="doneModal">
+    <div class="box">
+      <h3>Заявка отправлена</h3>
+      <p class="muted" style="margin-bottom:8px">Сохраните данные для отслеживания:</p>
+      <div class="mono" id="mUuid"></div>
+      <div class="mono" id="mPin" style="margin-top:8px"></div>
+      <div class="status-card" id="mInfo" style="margin-top:10px"></div>
+      <button class="btn primary" id="closeModal" style="margin-top:8px">Понятно</button>
+    </div>
+  </div>
+
+  <script>
+    // -------- Tabs --------
+    const tabs = document.querySelectorAll('.tab');
+    const views = document.querySelectorAll('.view');
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        views.forEach(v => v.classList.remove('active'));
+        document.getElementById(t.dataset.view).classList.add('active');
+        if (t.dataset.view === 'handlerView') refreshDashboard();
+      });
+    });
+
+    // -------- Data --------
+    const STORAGE = 'whiteLineCasesV2';
+    const statusNames = ['Принято', 'Проверка', 'Решение', 'Закрыто'];
+
+    const model = {
+      step: 0,
+      track: '',
+      person: '',
+      urgency: '',
+      moneyDemand: false,
+      hasEvidence: false,
+      pressure7: false,
+      mode: 'signal',
+      details: ''
+    };
+
+    function getCases() {
+      try { return JSON.parse(localStorage.getItem(STORAGE) || '{}') } catch { return {} }
+    }
+    function setCases(data) { localStorage.setItem(STORAGE, JSON.stringify(data)) }
+
+    function uuid() {
+      if (crypto.randomUUID) return crypto.randomUUID();
+      return 'xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+    function pin() { return "000000"; }
+
+    function calcPriority(m) {
+      let score = 0;
+      if (m.track === 'anti' && m.moneyDemand) score += 3;
+      if (m.urgency === 'now') score += 3;
+      if (m.hasEvidence) score += 2;
+      if (m.urgency === 'repeat') score += 2;
+      if (m.pressure7) score += 3;
+
+      if (score >= 6) return { name: 'Высокий', sla: 'до 2 часов', color: 'red' };
+      if (score >= 3) return { name: 'Средний', sla: 'до 24 часов', color: 'orange' };
+      return { name: 'Низкий', sla: 'до 48 часов', color: 'green' };
+    }
+
+    // -------- Wizard UI --------
+    const steps = document.querySelectorAll('.w-step');
+    const stepInds = document.querySelectorAll('[data-step-ind]');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const detailsEl = document.getElementById('details');
+
+    function bindOptGroup(containerId, key) {
+      const container = document.getElementById(containerId);
+      container.querySelectorAll('.opt').forEach(btn => {
+        btn.addEventListener('click', () => {
+          container.querySelectorAll('.opt').forEach(x => x.classList.remove('active'));
+          btn.classList.add('active');
+          model[key] = btn.dataset.v;
+          updateSummary();
+        });
+      });
+    }
+    bindOptGroup('trackOpts', 'track');
+    bindOptGroup('personOpts', 'person');
+    bindOptGroup('urgencyOpts', 'urgency');
+
+    document.getElementsByName('mode').forEach(r => {
+      r.addEventListener('change', () => { model.mode = r.value; updateSummary() })
+    });
+    ['moneyDemand', 'hasEvidence', 'pressure7'].forEach(id => {
+      document.getElementById(id).addEventListener('change', (e) => {
+        model[id] = e.target.checked; updateSummary();
+      });
+    });
+    detailsEl.addEventListener('input', () => model.details = detailsEl.value);
+
+    function stepValid() {
+      if (model.step === 0) return !!model.track;
+      if (model.step === 1) return !!model.person;
+      if (model.step === 2) return !!model.urgency;
+      if (model.step === 3) return (model.details || '').trim().length >= 8;
+      return false;
+    }
+
+    function renderStep() {
+      steps.forEach(s => s.style.display = Number(s.dataset.step) === model.step ? 'block' : 'none');
+      stepInds.forEach((el, i) => {
+        el.classList.toggle('active', i === model.step);
+        el.classList.toggle('done', i < model.step);
+      });
+      prevBtn.disabled = model.step === 0;
+      nextBtn.style.display = model.step < 3 ? 'inline-block' : 'none';
+      sendBtn.style.display = model.step === 3 ? 'inline-block' : 'none';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (!stepValid()) { alert('Выберите вариант на этом шаге.'); return; }
+      model.step = Math.min(3, model.step + 1);
+      renderStep();
+    });
+    prevBtn.addEventListener('click', () => {
+      model.step = Math.max(0, model.step - 1);
+      renderStep();
+    });
+
+    // -------- Summary chips --------
+    const sTrack = document.getElementById('sTrack');
+    const sPerson = document.getElementById('sPerson');
+    const sUrgency = document.getElementById('sUrgency');
+    const sMode = document.getElementById('sMode');
+    const sPrio = document.getElementById('sPrio');
+
+    function updateSummary() {
+      sTrack.textContent = 'Тип: ' + (
+        model.track === 'anti' ? 'Антикоррупция' :
+          model.track === 'ethic' ? 'Этика' : '—'
+      );
+      sPerson.textContent = 'Участник: ' + (model.person || '—');
+      sUrgency.textContent = 'Когда: ' + (
+        model.urgency === 'now' ? 'Сейчас' :
+          model.urgency === 'week' ? 'На неделе' :
+            model.urgency === 'repeat' ? 'Повторяется' :
+              model.urgency === 'past' ? 'Было раньше' : '—'
+      );
+      sMode.textContent = 'Формат: ' + (model.mode === 'official' ? 'официальное' : 'сигнал');
+      const p = calcPriority(model);
+      sPrio.textContent = 'Приоритет: ' + (model.track ? p.name : '—');
+      sPrio.className = 'chip ' + (p.color || 'red');
+    }
+
+    // -------- Submit --------
+    const doneModal = document.getElementById('doneModal');
+    const mUuid = document.getElementById('mUuid');
+    const mPin = document.getElementById('mPin');
+    const mInfo = document.getElementById('mInfo');
+    document.getElementById('closeModal').addEventListener('click', () => doneModal.classList.remove('active'));
+
+    sendBtn.addEventListener('click', () => {
+      if (!stepValid()) { alert('Добавьте краткое описание (минимум 8 символов).'); return; }
+
+      const id = uuid();
+      const p = pin();
+      const pr = calcPriority(model);
+
+      const c = getCases();
+      c[id] = {
+        id, pin: p,
+        track: model.track,
+        person: model.person,
+        urgency: model.urgency,
+        moneyDemand: model.moneyDemand,
+        hasEvidence: model.hasEvidence,
+        pressure7: model.pressure7,
+        mode: model.mode,
+        details: model.details.trim(),
+        priority: pr.name,
+        sla: pr.sla,
+        statusStep: 0,
+        status: 'Принято',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setCases(c);
+
+      mUuid.textContent = 'UUID: ' + id;
+      mPin.textContent = 'PIN: ' + p;
+      mInfo.innerHTML = `
+        <b>${pr.name}</b> приоритет · Первичная реакция ${pr.sla}<br>
+        Трек: ${model.track === 'anti' ? 'Антикоррупция' : 'Этика'}
+      `;
+      doneModal.classList.add('active');
+
+      // reset wizard
+      Object.assign(model, {
+        step: 0, track: '', person: '', urgency: '',
+        moneyDemand: false, hasEvidence: false, pressure7: false,
+        mode: 'signal', details: ''
+      });
+      document.querySelectorAll('.opt').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('input[type=checkbox]').forEach(x => x.checked = false);
+      document.querySelector('input[name=mode][value=signal]').checked = true;
+      detailsEl.value = '';
+      renderStep(); updateSummary(); refreshDashboard();
+    });
+
+    // -------- Status check --------
+    const inUuid = document.getElementById('inUuid');
+    const inPin = document.getElementById('inPin');
+    const statusOutput = document.getElementById('statusOutput');
+    const statusEmpty = document.getElementById('statusEmpty');
+    const oTrack = document.getElementById('oTrack');
+    const oPrio = document.getElementById('oPrio');
+    const oSla = document.getElementById('oSla');
+    const oMeta = document.getElementById('oMeta');
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const id = inUuid.value.trim();
+      const p = inPin.value.trim();
+      const c = getCases()[id];
+
+      if (!c || c.pin !== p) {
+        statusOutput.style.display = 'none';
+        statusEmpty.style.display = 'block';
+        statusEmpty.textContent = 'Заявка не найдена. Проверьте UUID и PIN.';
+        return;
+      }
+
+      statusEmpty.style.display = 'none';
+      statusOutput.style.display = 'block';
+
+      oTrack.textContent = c.track === 'anti' ? 'Антикоррупция' : 'Этика';
+      oPrio.textContent = 'Приоритет: ' + c.priority;
+      oSla.textContent = 'SLA: ' + c.sla;
+      oMeta.textContent = `Текущий этап: ${c.status}. Обновлено: ${new Date(c.updatedAt).toLocaleString('ru-RU')}`;
+
+      statusOutput.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.remove('done', 'current');
+        if (i < c.statusStep) d.classList.add('done');
+        if (i === c.statusStep) d.classList.add('current');
+      });
+    });
+
+    // -------- Handler dashboard --------
+    const tb = document.querySelector('#queueTable tbody');
+    function prTag(p) {
+      if (p === 'Высокий') return `<span class="tag t-red">Высокий</span>`;
+      if (p === 'Средний') return `<span class="tag t-orange">Средний</span>`;
+      return `<span class="tag t-green">Низкий</span>`;
+    }
+    function trackTag(t) {
+      return t === 'anti'
+        ? `<span class="tag t-red">Антикоррупция</span>`
+        : `<span class="tag t-blue">Этика</span>`;
+    }
+
+    function refreshDashboard() {
+      const items = Object.values(getCases());
+      document.getElementById('kTotal').textContent = items.length;
+      document.getElementById('kHigh').textContent = items.filter(x => x.priority === 'Высокий').length;
+      document.getElementById('kInWork').textContent = items.filter(x => x.statusStep === 1 || x.statusStep === 2).length;
+      document.getElementById('kClosed').textContent = items.filter(x => x.statusStep === 3).length;
+
+      // table
+      tb.innerHTML = '';
+      items
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+        .forEach(x => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.id}</td>
+            <td>${trackTag(x.track)}</td>
+            <td>${prTag(x.priority)}</td>
+            <td>${statusNames[x.statusStep]}</td>
+            <td>${new Date(x.updatedAt).toLocaleString('ru-RU')}</td>
+            <td>
+              <div class="list-actions">
+                <button class="btn tiny" data-id="${x.id}" data-to="1">Проверка</button>
+                <button class="btn tiny" data-id="${x.id}" data-to="2">Решение</button>
+                <button class="btn tiny" data-id="${x.id}" data-to="3">Закрыть</button>
+              </div>
+            </td>
+          `;
+          tb.appendChild(tr);
+        });
+
+      tb.querySelectorAll('button[data-id]').forEach(b => {
+        b.addEventListener('click', () => {
+          const id = b.dataset.id;
+          const to = Number(b.dataset.to);
+          const c = getCases();
+          if (c[id]) {
+            c[id].statusStep = to;
+            c[id].status = statusNames[to];
+            c[id].updatedAt = new Date().toISOString();
+            setCases(c);
+            refreshDashboard();
+          }
+        });
+      });
+
+      drawBar(items);
+      drawPie(items);
+    }
+
+    // -------- Simple charts (canvas) --------
+    function drawBar(items) {
+      const cvs = document.getElementById('barChart');
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width, h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const anti = items.filter(x => x.track === 'anti').length;
+      const ethic = items.filter(x => x.track === 'ethic').length;
+      const high = items.filter(x => x.priority === 'Высокий').length;
+      const mid = items.filter(x => x.priority === 'Средний').length;
+      const low = items.filter(x => x.priority === 'Низкий').length;
+
+      const data = [
+        { k: 'Антикорр.', v: anti, c: '#d05a5a' },
+        { k: 'Этика', v: ethic, c: '#3f7fd3' },
+        { k: 'Высокий', v: high, c: '#b23a3a' },
+        { k: 'Средний', v: mid, c: '#d38b22' },
+        { k: 'Низкий', v: low, c: '#2d9d63' },
+      ];
+
+      const max = Math.max(1, ...data.map(d => d.v));
+      const pad = 40, bw = 62, gap = 30;
+      data.forEach((d, i) => {
+        const x = pad + i * (bw + gap);
+        const bh = (d.v / max) * (h - 80);
+        const y = h - 30 - bh;
+
+        ctx.fillStyle = d.c;
+        ctx.fillRect(x, y, bw, bh);
+        ctx.fillStyle = '#385170';
+        ctx.font = '12px Inter';
+        ctx.fillText(d.k, x, h - 10);
+        ctx.fillStyle = '#1f2a37';
+        ctx.font = 'bold 13px Inter';
+        ctx.fillText(String(d.v), x + bw / 2 - 4, y - 6);
+      });
+    }
+
+    function drawPie(items) {
+      const cvs = document.getElementById('pieChart');
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width, h = cvs.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const vals = [
+        items.filter(x => x.statusStep === 0).length,
+        items.filter(x => x.statusStep === 1).length,
+        items.filter(x => x.statusStep === 2).length,
+        items.filter(x => x.statusStep === 3).length
+      ];
+      const cols = ['#5a8fd6', '#cc8a2a', '#7a63d3', '#2f9b65'];
+      const total = Math.max(1, vals.reduce((a, b) => a + b, 0));
+
+      let a0 = -Math.PI / 2;
+      const cx = 130, cy = 110, r = 72;
+      vals.forEach((v, i) => {
+        const a = (v / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, a0, a0 + a);
+        ctx.closePath();
+        ctx.fillStyle = cols[i];
+        ctx.fill();
+        a0 += a;
+      });
+
+      // hole
+      ctx.beginPath();
+      ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+
+      ctx.fillStyle = '#2b4361';
+      ctx.font = 'bold 14px Inter';
+      ctx.fillText(String(total), cx - 10, cy + 4);
+
+      // legend
+      const lx = 250, ly = 50;
+      statusNames.forEach((n, i) => {
+        ctx.fillStyle = cols[i];
+        ctx.fillRect(lx, ly + i * 34, 14, 14);
+        ctx.fillStyle = '#37506f';
+        ctx.font = '13px Inter';
+        ctx.fillText(`${n}: ${vals[i]}`, lx + 20, ly + 12 + i * 34);
+      });
+    }
+
+    // init
+    renderStep();
+    updateSummary();
+    refreshDashboard();
+  </script>
+</body>
+
+</html>
